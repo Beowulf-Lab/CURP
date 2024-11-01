@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Analizador Léxico y Sintáctico de CURP</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Estilos mejorados */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px #ccc;
+        }
+        h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            font-weight: bold;
+        }
+        .success-message {
+            color: green;
+            text-align: center;
+            font-weight: bold;
+        }
+        form {
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+        input[type="submit"], input[type="button"] {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #eee;
+        }
+        .tables-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .token-table, .Resultado {
+            width: 45%;
+        }
+        .Resultado ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .Resultado li {
+            padding: 5px 0;
+        }
+        @media (max-width: 768px) {
+            .token-table, .Resultado {
+                width: 100%;
+            }
+            input[type="text"] {
+                width: 100%;
+            }
+        }
+        /* Botón para mostrar/ocultar la tabla de tokens */
+        .toggle-button {
+            display: block;
+            margin: 0 auto 20px auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Analizador Léxico y Sintáctico de CURP</h2>
+
+        <!-- Mostrar error si ocurre alguno -->
+        {% if error_message %}
+        <div class="error-message">
+            <strong>Error:</strong> {{ error_message }}
+        </div>
+        {% endif %}
+
+        <!-- Mensaje de éxito si todo sale bien -->
+        {% if success_message %}
+        <div class="success-message">
+            <strong>Excelente:</strong> {{ success_message }}
+        </div>
+        {% endif %}
+
+        <!-- Formulario para ingresar la CURP -->
+        <form method="post" aria-label="Formulario de análisis">
+            <input type="text" id="curp" name="text" value="{{ text }}" placeholder="Escribe tu CURP aquí..." maxlength="18" required>
+            <br>
+            <input type="submit" value="Analizar">
+            <input type="button" value="Borrar" onclick="clearInput()">
+            {% if tokens %}
+            <input type="button" value="Mostrar/Ocultar Tokens" onclick="toggleTokens()">
+            {% endif %}
+        </form>
+
+        <!-- Sección de análisis léxico -->
+        {% if tokens %}
+        <section>
+            <h3>Analizador Léxico</h3>
+            <div class="tables-container">
+                <div class="token-table" id="token-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipo de Token</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tipo, valor in tokens %}
+                            <tr>
+                                <td>{{ tipo }}</td>
+                                <td>{{ valor }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Resumen de totales -->
+                <div class="Resultado">
+                    <h3>Resultado</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipo de Token</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tipo, count in counts.items() %}
+                            <tr>
+                                <td>{{ tipo }}</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <script>
+            function clearInput() {
+                document.getElementById('curp').value = '';
+            }
+            function toggleTokens() {
+                var tokenTable = document.getElementById('token-table');
+                if (tokenTable.style.display === 'none' || tokenTable.style.display === '') {
+                    tokenTable.style.display = 'block';
+                } else {
+                    tokenTable.style.display = 'none';
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
